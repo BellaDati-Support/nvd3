@@ -1,4 +1,4 @@
-/* nvd3 version 1.8.1-dev (https://github.com/novus/nvd3) 2015-07-14 */
+/* nvd3 version 1.8.1-dev (https://github.com/novus/nvd3) 2015-07-29 */
 (function(){
 
 // set up main nv object
@@ -588,7 +588,6 @@ nv.nearestValueIndex = function (values, searchVal, threshold) {
                 .classed("value",true)
                 .html(function(p, i) { return valueFormatter(p.value, i) });
 
-
             trowEnter.selectAll("td").each(function(p) {
                 if (p.highlight) {
                     var opacityScale = d3.scale.linear().domain([0,1]).range(["#fff",p.color]);
@@ -678,7 +677,7 @@ nv.nearestValueIndex = function (values, searchVal, threshold) {
                         tLeft = tooltipLeft(tooltipElem);
                         tTop = tooltipTop(tooltipElem);
                         if (tLeft + width > windowWidth) left = pos[0] - width - distance;
-                        if (tTop < scrollTop) top = scrollTop + 5;
+                        if (tTop < scrollTop) top = scrollTop - tTop + top;
                         if (tTop + height > scrollTop + windowHeight) top = scrollTop + windowHeight - tTop + top - height;
                         break;
                     case 'n':
@@ -704,6 +703,12 @@ nv.nearestValueIndex = function (values, searchVal, threshold) {
                         top = pos[1] - distance;
                         tLeft = tooltipLeft(tooltipElem);
                         tTop = tooltipTop(tooltipElem);
+                        break;
+                    case 'center':
+                        left = pos[0] - (width / 2);
+                        top = pos[1] - (height / 2);
+                        tLeft = tooltipLeft(container);
+                        tTop = tooltipTop(container);
                         break;
                 }
 
@@ -2260,6 +2265,7 @@ nv.models.boxPlotChart = function() {
         , noData = "No Data Available."
         , dispatch = d3.dispatch('tooltipShow', 'tooltipHide', 'beforeUpdate', 'renderEnd')
         , duration = 250
+        , tooltips
         ;
 
     xAxis
@@ -4490,6 +4496,7 @@ nv.models.furiousLegend = function() {
         , height = 20
         , getKey = function(d) { return d.key }
         , color = nv.utils.getColor()
+        , maxKeyLength = 20 //default value for key lengths
         , align = true
         , padding = 28 //define how much space between legend items. - recommend 32 for furious version
         , rightAlign = true
@@ -4657,7 +4664,14 @@ nv.models.furiousLegend = function() {
 
                 var seriesWidths = [];
                 series.each(function(d,i) {
-                    var legendText = d3.select(this).select('text');
+                    var legendText;
+                    if (getKey(d).length > maxKeyLength) { 
+                        var trimmedKey = getKey(d).substring(0, maxKeyLength);
+                        legendText = d3.select(this).select('text').text(trimmedKey + "...");
+                        d3.select(this).append("svg:title").text(getKey(d));
+                    } else {
+                        legendText = d3.select(this).select('text');
+                    } 
                     var nodeTextLength;
                     try {
                         nodeTextLength = legendText.node().getComputedTextLength();
@@ -4794,6 +4808,7 @@ nv.models.furiousLegend = function() {
         key:        {get: function(){return getKey;}, set: function(_){getKey=_;}},
         align:      {get: function(){return align;}, set: function(_){align=_;}},
         rightAlign:    {get: function(){return rightAlign;}, set: function(_){rightAlign=_;}},
+        maxKeyLength:  {get: function(){return maxKeyLength;}, set: function(_){maxKeyLength=_;}},
         padding:       {get: function(){return padding;}, set: function(_){padding=_;}},
         updateState:   {get: function(){return updateState;}, set: function(_){updateState=_;}},
         radioButtonMode:    {get: function(){return radioButtonMode;}, set: function(_){radioButtonMode=_;}},
@@ -5471,6 +5486,7 @@ nv.models.legend = function() {
         , height = 20
         , getKey = function(d) { return d.key }
         , color = nv.utils.getColor()
+        , maxKeyLength = 20 //default value for key lengths
         , align = true
         , padding = 32 //define how much space between legend items. - recommend 32 for furious version
         , rightAlign = true
@@ -5528,7 +5544,6 @@ nv.models.legend = function() {
                     .attr('class','nv-legend-symbol')
                     .attr('rx', 3)
                     .attr('ry', 3);
-
                 seriesShape = series.select('.nv-legend-symbol');
 
                 seriesEnter.append('g')
@@ -5638,7 +5653,14 @@ nv.models.legend = function() {
 
                 var seriesWidths = [];
                 series.each(function(d,i) {
-                    var legendText = d3.select(this).select('text');
+                    var legendText;
+                    if (getKey(d).length > maxKeyLength) { 
+                        var trimmedKey = getKey(d).substring(0, maxKeyLength);
+                        legendText = d3.select(this).select('text').text(trimmedKey + "...");
+                        d3.select(this).append("svg:title").text(getKey(d));
+                    } else {
+                        legendText = d3.select(this).select('text');
+                    } 
                     var nodeTextLength;
                     try {
                         nodeTextLength = legendText.node().getComputedTextLength();
@@ -5807,6 +5829,7 @@ nv.models.legend = function() {
         height:     {get: function(){return height;}, set: function(_){height=_;}},
         key:        {get: function(){return getKey;}, set: function(_){getKey=_;}},
         align:      {get: function(){return align;}, set: function(_){align=_;}},
+        maxKeyLength:   {get: function(){return maxKeyLength;}, set: function(_){maxKeyLength=_;}},
         rightAlign:    {get: function(){return rightAlign;}, set: function(_){rightAlign=_;}},
         padding:       {get: function(){return padding;}, set: function(_){padding=_;}},
         updateState:   {get: function(){return updateState;}, set: function(_){updateState=_;}},
@@ -7939,9 +7962,9 @@ nv.models.multiBar = function() {
                     })
                     .attr('height', function(d,i,j) {
                         if (!data[j].nonStackable) {
-                            return Math.max(Math.abs(y(d.y+d.y0) - y(d.y0)), 1);
+                            return Math.max(Math.abs(y(d.y+d.y0) - y(d.y0)), 0);
                         } else {
-                            return Math.max(Math.abs(y(getY(d,i)) - y(0)),1) || 0;
+                            return Math.max(Math.abs(y(getY(d,i)) - y(0)), 0) || 0;
                         }
                     })
                     .attr('x', function(d,i,j) {
@@ -8390,12 +8413,14 @@ nv.models.multiBarChart = function() {
 
     multibar.dispatch.on('elementMouseover.tooltip', function(evt) {
         evt.value = chart.x()(evt.data);
-        evt['series'] = {
-            key: evt.data.key,
-            value: chart.y()(evt.data),
-            color: evt.color
-        };
-        tooltip.data(evt).hidden(false);
+        if (!chart.stacked() || chart.y()(evt.data) > 0) {
+            evt['series'] = {
+                key: evt.data.key,
+                value: chart.y()(evt.data),
+                color: evt.color
+            };
+            tooltip.data(evt).hidden(false);
+        }
     });
 
     multibar.dispatch.on('elementMouseout.tooltip', function(evt) {
@@ -9301,14 +9326,14 @@ nv.models.multiChart = function() {
             var series1 = data.filter(function(d) {return !d.disabled && d.yAxis == 1})
                 .map(function(d) {
                     return d.values.map(function(d,i) {
-                        return { x: d.x, y: d.y }
+                        return { x: getX(d), y: getY(d) }
                     })
                 });
 
             var series2 = data.filter(function(d) {return !d.disabled && d.yAxis == 2})
                 .map(function(d) {
                     return d.values.map(function(d,i) {
-                        return { x: d.x, y: d.y }
+                        return { x: getX(d), y: getY(d) }
                     })
                 });
 
@@ -10271,6 +10296,7 @@ nv.models.pie = function() {
         , donutRatio = 0.5
         , arcsRadius = []
         , dispatch = d3.dispatch('chartClick', 'elementClick', 'elementDblClick', 'elementMouseover', 'elementMouseout', 'elementMousemove', 'renderEnd')
+        , getLabelColor = function(d) { return '#fff' }
         ;
 
     var arcs = [];
@@ -10489,8 +10515,9 @@ nv.models.pie = function() {
                         .attr("ry", 3);
 
                     group.append('text')
-                        .style('text-anchor', labelSunbeamLayout ? ((d.startAngle + d.endAngle) / 2 < Math.PI ? 'start' : 'end') : 'middle') //center the text on it's origin or begin/end if orthogonal aligned
-                        .style('fill', '#000')
+                    .style('text-anchor', (d.startAngle + d.endAngle) / 2 < Math.PI ? 'start' : 'end') //center the text on it's origin or begin/end if orthogonal aligned
+                    .style('fill', getLabelColor(d))
+
                 });
 
                 var labelLocationHash = {};
@@ -10512,8 +10539,10 @@ nv.models.pie = function() {
                         }
                         return 'translate(' + labelsArc[i].centroid(d) + ') rotate(' + rotateAngle + ')';
                     } else {
-                        d.outerRadius = radius + 10; // Set Outer Coordinate
-                        d.innerRadius = radius + 15; // Set Inner Coordinate
+                       
+						/** UPDATED START **/
+						d.outerRadius = radius ; // Set Outer Coordinate
+                        d.innerRadius = radius ; // Set Inner Coordinate
 
                         /*
                         Overlapping pie labels are not good. What this attempts to do is, prevent overlapping.
@@ -10535,7 +10564,7 @@ nv.models.pie = function() {
                 pieLabels.select(".nv-label text")
                     .style('text-anchor', function(d,i) {
                         //center the text on it's origin or begin/end if orthogonal aligned
-                        return labelSunbeamLayout ? ((d.startAngle + d.endAngle) / 2 < Math.PI ? 'start' : 'end') : 'middle';
+                        return (d.startAngle + d.endAngle) / 2 < Math.PI ? 'start' : 'end';
                     })
                     .text(function(d, i) {
                         var percent = (d.endAngle - d.startAngle) / (2 * Math.PI);
@@ -10617,6 +10646,7 @@ nv.models.pie = function() {
         labelSunbeamLayout: {get: function(){return labelSunbeamLayout;}, set: function(_){labelSunbeamLayout=_;}},
         donut:              {get: function(){return donut;}, set: function(_){donut=_;}},
         growOnHover:        {get: function(){return growOnHover;}, set: function(_){growOnHover=_;}},
+        labelColor:          {get: function(){return getLabelColor;}, set: function(_){getLabelColor=_;}},
 
         // depreciated after 1.7.1
         pieLabelsOutside: {get: function(){return labelsOutside;}, set: function(_){
@@ -11347,8 +11377,10 @@ nv.models.scatter = function() {
         };
         this.highlightPoint = function (seriesIndex, pointIndex, isHoverOver) {
             nv.dom.write(function() {
-                container.select(" .nv-series-" + seriesIndex + " .nv-point-" + pointIndex)
-                    .classed("hover", isHoverOver);
+                container.select('.nv-groups')
+                  .selectAll(".nv-series-" + seriesIndex)
+                  .selectAll(".nv-point-" + pointIndex)
+                  .classed("hover", isHoverOver);
             });
         };
     };
