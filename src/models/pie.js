@@ -248,8 +248,9 @@ nv.models.pie = function() {
                         .attr("ry", 3);
 
                     group.append('text')
-                        .style('text-anchor', labelSunbeamLayout ? ((d.startAngle + d.endAngle) / 2 < Math.PI ? 'start' : 'end') : 'middle') //center the text on it's origin or begin/end if orthogonal aligned
-                        .style('fill', '#000')
+                    .style('text-anchor', (d.startAngle + d.endAngle) / 2 < Math.PI ? 'start' : 'end') //center the text on it's origin or begin/end if orthogonal aligned
+                    .style('fill', d.data.color)    // '#000'
+
                 });
 
                 var labelLocationHash = {};
@@ -271,8 +272,10 @@ nv.models.pie = function() {
                         }
                         return 'translate(' + labelsArc[i].centroid(d) + ') rotate(' + rotateAngle + ')';
                     } else {
-                        d.outerRadius = radius + 10; // Set Outer Coordinate
-                        d.innerRadius = radius + 15; // Set Inner Coordinate
+                       
+						/** UPDATED START **/
+						d.outerRadius = radius ; // Set Outer Coordinate
+                        d.innerRadius = radius ; // Set Inner Coordinate
 
                         /*
                         Overlapping pie labels are not good. What this attempts to do is, prevent overlapping.
@@ -294,7 +297,7 @@ nv.models.pie = function() {
                 pieLabels.select(".nv-label text")
                     .style('text-anchor', function(d,i) {
                         //center the text on it's origin or begin/end if orthogonal aligned
-                        return labelSunbeamLayout ? ((d.startAngle + d.endAngle) / 2 < Math.PI ? 'start' : 'end') : 'middle';
+                        return (d.startAngle + d.endAngle) / 2 < Math.PI ? 'start' : 'end';
                     })
                     .text(function(d, i) {
                         var percent = (d.endAngle - d.startAngle) / (2 * Math.PI);

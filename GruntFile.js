@@ -14,7 +14,7 @@ module.exports = function(grunt) {
                 src: [
                     'src/css/*.css'
                 ],
-                dest: 'build/nv.d3.css'
+                dest: 'build/belladati.nv.d3.css'
             },
             js: {
                 options: {
@@ -33,7 +33,7 @@ module.exports = function(grunt) {
                     'src/models/*.js'
                     // example to exclude files: '!src/models/excludeMe*'
                      ],
-                dest: 'build/nv.d3.js'
+                dest: 'build/belladati.nv.d3.js'
             }
         },
         uglify: {
@@ -43,7 +43,7 @@ module.exports = function(grunt) {
             },
             js: {
                 files: {
-                    'build/nv.d3.min.js': ['build/nv.d3.js']
+                    'build/belladati.nv.d3.min.js': ['build/belladati.nv.d3.js']
                 }
             }
         },
@@ -76,14 +76,14 @@ module.exports = function(grunt) {
         copy: {
           css: {
             files: [
-              { src: 'src/nv.d3.css', dest: 'build/nv.d3.css' }
+              { src: 'src/nv.d3.css', dest: 'build/belladati.nv.d3.css' }
             ]
           }
         },
         cssmin: {
           dist: {
             files: {
-                'build/nv.d3.min.css' : ['build/nv.d3.css']
+                'build/belladati.nv.d3.min.css' : ['build/belladati.nv.d3.css']
             }
           }
         },
