@@ -3,7 +3,7 @@
 // and used by Meteor https://www.meteor.com/ and its package repository Atmosphere https://atmospherejs.com
 
 Package.describe({
-    "name": 'belladati:belladati-nvd3',
+    "name": 'com.belladati:belladati-nvd3',
     summary: 'Belladati Nvd3.org charts.',
     version: '1.8.1-dev',
     git: "https://github.com/BellaDati-Support/nvd3.git"
