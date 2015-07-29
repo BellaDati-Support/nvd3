@@ -30,6 +30,7 @@ nv.models.pie = function() {
         , donutRatio = 0.5
         , arcsRadius = []
         , dispatch = d3.dispatch('chartClick', 'elementClick', 'elementDblClick', 'elementMouseover', 'elementMouseout', 'elementMousemove', 'renderEnd')
+        , getLabelColor = function(d) { return '#fff' }
         ;
 
     var arcs = [];
@@ -249,7 +250,7 @@ nv.models.pie = function() {
 
                     group.append('text')
                     .style('text-anchor', (d.startAngle + d.endAngle) / 2 < Math.PI ? 'start' : 'end') //center the text on it's origin or begin/end if orthogonal aligned
-                    .style('fill', d.data.color)    // '#000'
+                    .style('fill', getLabelColor(d))
 
                 });
 
@@ -379,6 +380,7 @@ nv.models.pie = function() {
         labelSunbeamLayout: {get: function(){return labelSunbeamLayout;}, set: function(_){labelSunbeamLayout=_;}},
         donut:              {get: function(){return donut;}, set: function(_){donut=_;}},
         growOnHover:        {get: function(){return growOnHover;}, set: function(_){growOnHover=_;}},
+        labelColor:          {get: function(){return getLabelColor;}, set: function(_){getLabelColor=_;}},
 
         // depreciated after 1.7.1
         pieLabelsOutside: {get: function(){return labelsOutside;}, set: function(_){
