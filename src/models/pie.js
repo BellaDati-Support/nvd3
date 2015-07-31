@@ -293,18 +293,22 @@ nv.models.pie = function() {
                         }
                         return 'translate(' + center + ')'
                     }
-                });
-
+                });                                            
+             	
+                
                 pieLabels.select(".nv-label text")
                     .style('text-anchor', function(d,i) {
                         //center the text on it's origin or begin/end if orthogonal aligned
                         return (d.startAngle + d.endAngle) / 2 < Math.PI ? 'start' : 'end';
                     })
-                    .text(function(d, i) {
-                        var percent = (d.endAngle - d.startAngle) / (2 * Math.PI);
-                        var label = '';
-                        if (!d.value || percent < labelThreshold) return '';
 
+                    .each(function(d, i) {
+                    	var text = d3.select(this);
+                    	
+                    	var percent = (d.endAngle - d.startAngle) / (2 * Math.PI);
+                        var label = '';
+                        if (!d.value || percent < labelThreshold) return '';                                                
+                                                                        
                         if(typeof labelType === 'function') {
                             label = labelType(d, i, {
                                 'key': getX(d.data),
@@ -324,9 +328,18 @@ nv.models.pie = function() {
                                     break;
                             }
                         }
-                        return label;
+                        
+                        // this code handles multi-line labels delimited with \n
+                        var lines = label.split('\n')
+                		.forEach(function(line, i) {
+                			var tspan = text.append('tspan').text(line.trim());
+                			if (i > 0) {
+                	            tspan.attr('x', 0).attr('dy', '1.3em');
+                			}
+                		})
+                                                
+                        return '';                  	                    	
                     })
-                ;
             }
 
 

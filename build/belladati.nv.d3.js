@@ -1,4 +1,4 @@
-/* nvd3 version 1.8.1-dev (https://github.com/BellaDati-Support/nvd3.git) 2015-07-29 */
+/* nvd3 version 1.8.1-dev (https://github.com/BellaDati-Support/nvd3.git) 2015-07-31 */
 (function(){
 
 // set up main nv object
@@ -10521,7 +10521,7 @@ nv.models.pie = function() {
                 });
 
                 var labelLocationHash = {};
-                var avgHeight = 14;
+                var avgHeight = 25;
                 var avgWidth = 140;
                 var createHashKey = function(coordinates) {
                     return Math.floor(coordinates[0]/avgWidth) * avgWidth + ',' + Math.floor(coordinates[1]/avgHeight) * avgHeight;
@@ -10559,18 +10559,62 @@ nv.models.pie = function() {
                         }
                         return 'translate(' + center + ')'
                     }
-                });
-
+                });                                            
+             	
+                
                 pieLabels.select(".nv-label text")
                     .style('text-anchor', function(d,i) {
                         //center the text on it's origin or begin/end if orthogonal aligned
                         return (d.startAngle + d.endAngle) / 2 < Math.PI ? 'start' : 'end';
                     })
+                    
+                    .each(function(d, i) {
+                    	var text = d3.select(this);
+                    	
+                    	var percent = (d.endAngle - d.startAngle) / (2 * Math.PI);
+                        var label = '';
+                        if (!d.value || percent < labelThreshold) return '';                                                
+                                                                        
+                        if(typeof labelType === 'function') {
+                            label = labelType(d, i, {
+                                'key': getX(d.data),
+                                'value': getY(d.data),
+                                'percent': valueFormat(percent)
+                            });
+                        } else {
+                            switch (labelType) {
+                                case 'key':
+                                    label = getX(d.data);
+                                    break;
+                                case 'value':
+                                    label = valueFormat(getY(d.data));
+                                    break;
+                                case 'percent':
+                                    label = d3.format('%')(percent);
+                                    break;
+                            }
+                        }
+                        
+                        // this code handles multi-line labels delimited with \n
+                        var lines = label.split('\n')
+                		.forEach(function(line, i) {
+                			var tspan = text.append('tspan').text(line.trim());
+                			if (i > 0) {
+                	            tspan.attr('x', 0).attr('dy', '1.3em');
+                			}
+                		})
+                        
+                        
+                        return '';                  	                    	
+                    })
+                    
+                 
+                /*    
                     .text(function(d, i) {
                         var percent = (d.endAngle - d.startAngle) / (2 * Math.PI);
                         var label = '';
-                        if (!d.value || percent < labelThreshold) return '';
-
+                        if (!d.value || percent < labelThreshold) return '';                                                
+                                                                        
                         if(typeof labelType === 'function') {
                             label = labelType(d, i, {
                                 'key': getX(d.data),
@@ -10592,7 +10636,7 @@ nv.models.pie = function() {
                         }
                         return label;
                     })
-                ;
+                ; */
             }
 
 
