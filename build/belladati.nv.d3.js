@@ -10521,7 +10521,7 @@ nv.models.pie = function() {
                 });
 
                 var labelLocationHash = {};
-                var avgHeight = 25;
+                var avgHeight = 14;
                 var avgWidth = 140;
                 var createHashKey = function(coordinates) {
                     return Math.floor(coordinates[0]/avgWidth) * avgWidth + ',' + Math.floor(coordinates[1]/avgHeight) * avgHeight;
@@ -10567,7 +10567,7 @@ nv.models.pie = function() {
                         //center the text on it's origin or begin/end if orthogonal aligned
                         return (d.startAngle + d.endAngle) / 2 < Math.PI ? 'start' : 'end';
                     })
-                    
+
                     .each(function(d, i) {
                     	var text = d3.select(this);
                     	
@@ -10600,43 +10600,12 @@ nv.models.pie = function() {
                 		.forEach(function(line, i) {
                 			var tspan = text.append('tspan').text(line.trim());
                 			if (i > 0) {
-                	            tspan.attr('x', 0).attr('dy', '1.3em');
+                	            tspan.attr('x', 0).attr('dy', '1.1em');
                 			}
                 		})
-                        
-                        
+                                                
                         return '';                  	                    	
                     })
-                    
-                 
-                /*    
-                    .text(function(d, i) {
-                        var percent = (d.endAngle - d.startAngle) / (2 * Math.PI);
-                        var label = '';
-                        if (!d.value || percent < labelThreshold) return '';                                                
-                                                                        
-                        if(typeof labelType === 'function') {
-                            label = labelType(d, i, {
-                                'key': getX(d.data),
-                                'value': getY(d.data),
-                                'percent': valueFormat(percent)
-                            });
-                        } else {
-                            switch (labelType) {
-                                case 'key':
-                                    label = getX(d.data);
-                                    break;
-                                case 'value':
-                                    label = valueFormat(getY(d.data));
-                                    break;
-                                case 'percent':
-                                    label = d3.format('%')(percent);
-                                    break;
-                            }
-                        }
-                        return label;
-                    })
-                ; */
             }
 
 

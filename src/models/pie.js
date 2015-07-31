@@ -334,7 +334,7 @@ nv.models.pie = function() {
                 		.forEach(function(line, i) {
                 			var tspan = text.append('tspan').text(line.trim());
                 			if (i > 0) {
-                	            tspan.attr('x', 0).attr('dy', '1.3em');
+                	            tspan.attr('x', 0).attr('dy', '1.1em');
                 			}
                 		})
                                                 
