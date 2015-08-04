@@ -1,4 +1,4 @@
-/* nvd3 version 1.8.1-dev (https://github.com/BellaDati-Support/nvd3.git) 2015-07-31 */
+/* nvd3 version 1.8.1-dev (https://github.com/BellaDati-Support/nvd3.git) 2015-08-04 */
 (function(){
 
 // set up main nv object
