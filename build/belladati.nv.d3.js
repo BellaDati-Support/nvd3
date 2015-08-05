@@ -1,4 +1,4 @@
-/* nvd3 version 1.8.1-dev (https://github.com/BellaDati-Support/nvd3.git) 2015-08-04 */
+/* nvd3 version 1.8.1-dev (https://github.com/BellaDati-Support/nvd3.git) 2015-08-05 */
 (function(){
 
 // set up main nv object
@@ -10526,6 +10526,10 @@ nv.models.pie = function() {
                 var createHashKey = function(coordinates) {
                     return Math.floor(coordinates[0]/avgWidth) * avgWidth + ',' + Math.floor(coordinates[1]/avgHeight) * avgHeight;
                 };
+                
+                var orderedPieLabels = pieLabels.sort(function(a,b){
+                	
+                });
 
                 pieLabels.watchTransition(renderWatch, 'pie labels').attr('transform', function (d, i) {
                     if (labelSunbeamLayout) {
@@ -10553,7 +10557,26 @@ nv.models.pie = function() {
                         if (d.value) {
                             var hashKey = createHashKey(center);
                             if (labelLocationHash[hashKey]) {
-                                center[1] -= avgHeight;
+                                var centerX = center[0];
+                                var centerY = center[1];                            	                               
+                                
+                                /*
+                                 If there is a collision, move label away from centre of the pie along Y axe (up or down)
+                                 */
+                                
+                            	// top left quadrant
+                            	if(centerX < 0 && centerY < 0) {
+                            		center[1] -= avgHeight;
+                            	// top right quadrant	
+                                } else if (centerX >= 0 && centerY < 0) {
+                                	center[1] -= avgHeight;
+                                // bottom left quadrant
+                                }  else if (centerX < 0 && centerY >= 0) {
+                                	center[1] += avgHeight;                                
+                            	// bottom right quadrant
+                            	}  else if (centerX >= 0 && centerY >= 0) {
+                            		center[1] += avgHeight;
+                            	}
                             }
                             labelLocationHash[createHashKey(center)] = true;
                         }
