@@ -348,14 +348,16 @@ nv.models.pie = function() {
                             }
                         }
                         
-                        // this code handles multi-line labels delimited with \n
-                        var lines = label.split('\n')
-                		.forEach(function(line, i) {
-                			var tspan = text.append('tspan').text(line.trim());
-                			if (i > 0) {
-                	            tspan.attr('x', 0).attr('dy', '1.1em');
-                			}
-                		})
+                		// this code handles multi-line labels delimited with \n
+                        var lines = label.split('\n');                		
+                		text.selectAll('tspan').data(lines).enter().append('tspan').data(lines)
+                			.each(function(d,i) {
+                				var tspan = d3.select(this);
+                				tspan.text(d.trim());
+                				if (i > 0) {
+                					tspan.attr('x', 0).attr('dy', '1.1em');
+                				}
+                			});                       
                                                 
                         return '';                  	                    	
                     })

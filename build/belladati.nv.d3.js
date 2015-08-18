@@ -1,4 +1,4 @@
-/* nvd3 version 1.8.1-dev (https://github.com/BellaDati-Support/nvd3.git) 2015-08-05 */
+/* nvd3 version 1.8.1-dev (https://github.com/BellaDati-Support/nvd3.git) 2015-08-18 */
 (function(){
 
 // set up main nv object
@@ -10525,11 +10525,7 @@ nv.models.pie = function() {
                 var avgWidth = 140;
                 var createHashKey = function(coordinates) {
                     return Math.floor(coordinates[0]/avgWidth) * avgWidth + ',' + Math.floor(coordinates[1]/avgHeight) * avgHeight;
-                };
-                
-                var orderedPieLabels = pieLabels.sort(function(a,b){
-                	
-                });
+                };                
 
                 pieLabels.watchTransition(renderWatch, 'pie labels').attr('transform', function (d, i) {
                     if (labelSunbeamLayout) {
@@ -10618,14 +10614,16 @@ nv.models.pie = function() {
                             }
                         }
                         
-                        // this code handles multi-line labels delimited with \n
-                        var lines = label.split('\n')
-                		.forEach(function(line, i) {
-                			var tspan = text.append('tspan').text(line.trim());
-                			if (i > 0) {
-                	            tspan.attr('x', 0).attr('dy', '1.1em');
-                			}
-                		})
+                		// this code handles multi-line labels delimited with \n
+                        var lines = label.split('\n');                		
+                		text.selectAll('tspan').data(lines).enter().append('tspan').data(lines)
+                			.each(function(d,i) {
+                				var tspan = d3.select(this);
+                				tspan.text(d.trim());
+                				if (i > 0) {
+                					tspan.attr('x', 0).attr('dy', '1.1em');
+                				}
+                			});                       
                                                 
                         return '';                  	                    	
                     })
@@ -10792,7 +10790,9 @@ nv.models.pieChart = function() {
             var availableWidth = nv.utils.availableWidth(width, container, margin),
                 availableHeight = nv.utils.availableHeight(height, container, margin);
 
-            chart.update = function() { container.transition().call(chart); };
+            chart.update = function() {           		            
+            		container.transition().call(chart); 
+            	};
             chart.container = this;
 
             state.setter(stateSetter(data), chart.update)
